@@ -27,9 +27,12 @@ set -o pipefail
 
 ## Variable Declartions ##
 
+# This URI is the same everywhere. Keep it DRY.
+latest_metadata=http://169.254.169.254/latest/meta-data/
+
 # Get Instance Details
-instance_id=$(wget -q -O- http://169.254.169.254/latest/meta-data/instance-id)
-region=$(wget -q -O- http://169.254.169.254/latest/meta-data/placement/availability-zone | sed -e 's/\([1-9]\).$/\1/g')
+instance_id=$(wget -q -O- ${latest_metadata}instance-id)
+region=$(wget -q -O- ${latest_metadata}placement/availability-zone | sed -e 's/\([1-9]\).$/\1/g')
 
 # Set Logging Options
 logfile="/var/log/ebs-snapshot.log"
