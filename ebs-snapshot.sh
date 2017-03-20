@@ -33,6 +33,12 @@ latest_metadata=http://169.254.169.254/latest/meta-data/
 # Get Instance Details
 instance_id=$(wget -q -O- ${latest_metadata}instance-id)
 region=$(wget -q -O- ${latest_metadata}placement/availability-zone | sed -e 's/\([1-9]\).$/\1/g')
+iam_role=$(wget -q -O- ${latest_metadata}iam/security-credentials/)
+
+# Get rolling credentials for machine role
+export AWS_ACCESS_KEY_ID=$(wget -q -O- ${latest_metadata}iam/security-credentials/${iam_role} | grep "AccessKeyId" | cut -d ":" -f 2 | tr "," " " | tr -d '"')
+export AWS_SECRET_ACCESS_KEY=$(wget -q -O- ${latest_metadata}iam/security-credentials/${iam_role} | grep "SecretAccessKey" | cut -d ":" -f 2 | tr "," " " | tr -d '"')
+export AWS_SECURITY_TOKEN=$(wget -q -O- ${latest_metadata}iam/security-credentials/${iam_role} | grep "Token" | cut -d ":" -f 2 | tr "," " " | tr -d '"')
 
 # Set Logging Options
 logfile="/var/log/ebs-snapshot.log"
